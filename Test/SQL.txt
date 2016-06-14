@@ -1,0 +1,18 @@
+﻿--Есть таблица хранящая покупки (линии чека): Sales: salesid, productid, datetime, customerid. Мы хотим понять, через какие продукты клиенты «попадают» к нам в магазин. 
+--Напишите запрос, который выводит продукт и количество случаев, когда он был первой покупкой клиента.
+
+--MSSQL
+
+  SELECT x.[productid],
+         count(*) as firstpurchasecount
+    FROM [dbo].[Sales] x
+    JOIN (
+			SELECT MIN(p.[datetime]) as mindt,
+   				   p.[customerid]
+			FROM [dbo].[Sales] p
+			GROUP BY p.[customerid]) y 
+	ON y.[customerid] = x.[customerid] AND y.mindt = x.[datetime]
+  GROUP BY x.[productid]
+  ORDER BY firstpurchasecount desc
+
+
